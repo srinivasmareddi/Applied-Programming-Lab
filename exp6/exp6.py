@@ -1,0 +1,68 @@
+import scipy.signal as sp
+from pylab import *
+color=['hotpink','r','g','navy']
+rcParams['axes.grid'] = True
+
+figure(1)
+title('\u03C9 = 1.5 , \u03B1 = 0.5')
+ylabel('x \u2192')
+xlabel('t \u2192')
+H=sp.lti([1,0.5],polymul([1,1,2.5],[1,0,1]))
+t,x=sp.impulse(H,None,linspace(0,50,500))
+plot(t,x)
+figure(2)
+ylabel('x \u2192')
+xlabel('t \u2192')
+title('\u03C9 = 1.5 , \u03B1 = 0.05')
+H=sp.lti([1,0.05],polymul([1,0.1,2.275],[1,0,2.25]))
+t,x=sp.impulse(H,None,linspace(0,50,500))
+plot(t,x)
+fig,axes=subplots(nrows=2,ncols=2)
+for i in range(1,5):
+    H=sp.lti([1,0.5],polymul([1,0.1,0.025+(1.4+0.05*i)**2],[1,0,2.25]))
+    t,x=sp.impulse(H,None,linspace(0,50,500))
+    w=1.4+0.05*i
+    subplots_adjust(wspace=0.3,hspace=0.3)
+    if i<=2:
+        axes[0][i-1].set_title('\u03C9 = %1.2f'%w)
+        axes[0][i-1].plot(t,x,color=color[i-1])
+    else:
+        axes[1][i-3].set_title('\u03C9 = %1.2f'%w)
+        axes[1][i-3].plot(t,x,color=color[i-1])
+
+fig,axes=subplots(nrows=1,ncols=2)
+H1=sp.lti([1,0,2],[1,0,3,0])
+t,x=sp.impulse(H1,None,linspace(0,20,200))
+axes[0].set_title('x')
+axes[0].set_xlabel('t \u2192')
+axes[0].plot(t,x,color=color[2])
+H2=sp.lti(2,[1,0,3,0])
+t,y=sp.impulse(H2,None,linspace(0,20,200))
+axes[1].set_title('y')
+axes[1].set_xlabel('t \u2192')
+axes[1].plot(t,y,color=color[3])
+
+figure(5)
+H=sp.lti(1,[10**-12,10**-4,1])
+w,S,phi=H.bode()
+subplots_adjust(wspace=0.3,hspace=0.6)
+subplot(2,1,1)
+title('Magnitude Plot')
+ylabel('log(\u03C9) \u2192')
+xlabel('\u03C9 \u2192')
+semilogx(w,S,color='coral')
+subplot(2,1,2)
+ylabel('\u03c6 \u2192')
+xlabel('\u03C9 \u2192')
+title('Phase Plot')
+semilogx(w,phi,color='dodgerblue')
+
+figure(6)
+title('Ouptut Voltage')
+xlabel('t \u2192')
+ylabel('v \u2192')
+t=linspace(0,10**-2,10**5)
+u=cos((10**3)*t)-cos((10**6)*t)
+t,y,svec=sp.lsim(H,u,t)
+plot(t,y,color='tomato')
+show()
